@@ -1,14 +1,32 @@
-import React from "react"
+import React, { Fragment } from "react"
 import ReactDOM from "react-dom"
 
 type FormElem = React.FormEvent<HTMLFormElement>
 
+type ITodo = {
+  text: string
+  complete: boolean
+}
+
 export default function App(): JSX.Element {
   const [value, setValue] = React.useState<string>("")
+  const [todos, setTodos] = React.useState<ITodo[]>([])
 
   const handleSubmit = (e: FormElem): void => {
     e.preventDefault()
+    addTodo(value)
     setValue("")
+  }
+
+  const addTodo = (text: string): void => {
+    const newTodos: ITodo[] = [...todos, { text, complete: false }]
+    setTodos(newTodos)
+  }
+
+  const completeTodo = (index: number): void => {
+    const newTodos: ITodo[] = todos
+    newTodos[index].complete = !newTodos[index].complete
+    setTodos(newTodos)
   }
 
   return (
@@ -23,6 +41,16 @@ export default function App(): JSX.Element {
         />
         <button type="submit">Add Todo</button>
       </form>
+      <section>
+        {todos.map((todo: ITodo, index: number) => (
+          <Fragment key={index}>
+            <div>{todo.text}</div>
+            <button type="button" onClick={() => completeTodo(index)}>
+              {todo.complete ? "Incomplete" : "Complete"}
+            </button>
+          </Fragment>
+        ))}
+      </section>
     </>
   )
 }
